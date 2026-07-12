@@ -7,15 +7,17 @@ class MaintenanceAdmin(admin.ModelAdmin):
     Administration configuration for the Maintenance model.
     """
     list_display = (
+        'id',
         'vehicle',
-        'issue',
-        'maintenance_cost',
+        'issue_title',
+        'maintenance_type',
+        'estimated_cost',
+        'actual_cost',
         'start_date',
         'end_date',
-        'is_active',
-        'created_at'
+        'status'
     )
-    list_filter = ('is_active', 'start_date', 'end_date')
-    search_fields = ('issue', 'description', 'vehicle__registration_number')
-    ordering = ('-start_date',)
-    readonly_fields = ('created_at',)
+    list_filter = ('status', 'maintenance_type', 'start_date', 'end_date')
+    search_fields = ('issue_title', 'description', 'vehicle__registration_number', 'assigned_technician')
+    ordering = ('-created_at',)
+    readonly_fields = ('created_at', 'updated_at')
