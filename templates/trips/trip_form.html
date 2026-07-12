@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if object %}Edit Trip #{{ object.id }}{% else %}Create Trip{% endif %} - TransitOps
+{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <a href="{% if object %}{% url 'trips:detail' object.pk %}{% else %}{% url 'trips:list' %}{% endif %}" class="text-decoration-none text-secondary small d-inline-flex align-items-center gap-1 mb-2">
+        <i class="bi bi-arrow-left"></i> Cancel and Go Back
+    </a>
+    <h1 class="page-title">
+        {% if object %}Edit Trip: #{{ object.id }}{% else %}Create New Trip{% endif %}
+    </h1>
+    <p class="page-subtitle">Configure source, destination, and assign available assets.</p>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+        <div class="custom-card border-0">
+            <form method="post" class="needs-validation" novalidate>
+                {% csrf_token %}
+
+                <!-- Non-field Errors -->
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger border-0 shadow-sm mb-4">
+                    {% for error in form.non_field_errors %}
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <span>{{ error }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Form Fields Layout -->
+                <div class="row g-3">
+                    <!-- Vehicle selection -->
+                    <div class="col-12 col-md-6">
+                        <label for="{{ form.vehicle.id_for_label }}" class="form-label fw-semibold text-secondary" style="font-size: 0.85rem;">{{ form.vehicle.label }}</label>
+                        {{ form.vehicle }}
+                        {% if form.vehicle.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.vehicle.errors %}{{ error }} {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="form-text small">{{ form.vehicle.help_text }}</div>
+                    </div>
+
+                    <!-- Driver selection -->
+                    <div class="col-12 col-md-6">
+                        <label for="{{ form.driver.id_for_label }}" class="form-label fw-semibold text-secondary" style="font-size: 0.85rem;">{{ form.driver.label }}</label>
+                        {{ form.driver }}
+                        {% if form.driver.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.driver.errors %}{{ error }} {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="form-text small">{{ form.driver.help_text }}</div>
+                    </div>
+
+                    <!-- Source location -->
+                    <div class="col-12 col-md-6">
+                        <label for="{{ form.source.id_for_label }}" class="form-label fw-semibold text-secondary" style="font-size: 0.85rem;">{{ form.source.label }}</label>
+                        {{ form.source }}
+                        {% if form.source.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.source.errors %}{{ error }} {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="form-text small">{{ form.source.help_text }}</div>
+                    </div>
+
+                    <!-- Destination location -->
+                    <div class="col-12 col-md-6">
+                        <label for="{{ form.destination.id_for_label }}" class="form-label fw-semibold text-secondary" style="font-size: 0.85rem;">{{ form.destination.label }}</label>
+                        {{ form.destination }}
+                        {% if form.destination.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.destination.errors %}{{ error }} {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="form-text small">{{ form.destination.help_text }}</div>
+                    </div>
+
+                    <!-- Cargo Weight -->
+                    <div class="col-12 col-md-4">
+                        <label for="{{ form.cargo_weight.id_for_label }}" class="form-label fw-semibold text-secondary" style="font-size: 0.85rem;">{{ form.cargo_weight.label }}</label>
+                        <div class="input-group">
+                            {{ form.cargo_weight }}
+                            <span class="input-group-text bg-light text-secondary">kg</span>
+                        </div>
+                        {% if form.cargo_weight.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.cargo_weight.errors %}{{ error }} {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="form-text small">{{ form.cargo_weight.help_text }}</div>
+                    </div>
+
+                    <!-- Planned Distance -->
+                    <div class="col-12 col-md-4">
+                        <label for="{{ form.planned_distance.id_for_label }}" class="form-label fw-semibold text-secondary" style="font-size: 0.85rem;">{{ form.planned_distance.label }}</label>
+                        <div class="input-group">
+                            {{ form.planned_distance }}
+                            <span class="input-group-text bg-light text-secondary">km</span>
+                        </div>
+                        {% if form.planned_distance.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.planned_distance.errors %}{{ error }} {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="form-text small">{{ form.planned_distance.help_text }}</div>
+                    </div>
+
+                    <!-- Revenue -->
+                    <div class="col-12 col-md-4">
+                        <label for="{{ form.revenue.id_for_label }}" class="form-label fw-semibold text-secondary" style="font-size: 0.85rem;">{{ form.revenue.label }}</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-secondary">₹</span>
+                            {{ form.revenue }}
+                        </div>
+                        {% if form.revenue.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.revenue.errors %}{{ error }} {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="form-text small">{{ form.revenue.help_text }}</div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
+                    <a href="{% if object %}{% url 'trips:detail' object.pk %}{% else %}{% url 'trips:list' %}{% endif %}" class="btn btn-outline-secondary px-4 fw-semibold">Cancel</a>
+                    <button type="submit" class="btn btn-primary px-4 fw-semibold border-0" style="background: var(--primary-gradient);">
+                        {% if object %}Save Changes{% else %}Create Draft{% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if object %}Edit {{ object.registration_number }}{% else %}Add Vehicle{% endif %} - TransitOps
+{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <a href="{% if object %}{% url 'vehicles:detail' object.pk %}{% else %}{% url 'vehicles:list' %}{% endif %}" class="text-decoration-none text-secondary small d-inline-flex align-items-center gap-1 mb-2">
+        <i class="bi bi-arrow-left"></i> Cancel and Go Back
+    </a>
+    <h1 class="page-title">
+        {% if object %}Edit Vehicle: {{ object.registration_number }}{% else %}Add New Vehicle{% endif %}
+    </h1>
+    <p class="page-subtitle">Configure fleet asset profile details.</p>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+        <div class="custom-card border-0">
+            <form method="post" class="needs-validation" novalidate>
+                {% csrf_token %}
+                
+                <!-- Non-field Errors -->
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger border-0 shadow-sm mb-4">
+                    {% for error in form.non_field_errors %}
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <span>{{ error }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Form Fields Layout -->
+                <div class="row g-3">
+                    <!-- Registration Number -->
+                    <div class="col-12 col-md-6">
+                        <label for="{{ form.registration_number.id_for_label }}" class="form-label fw-semibold text-secondary" style="font-size: 0.85rem;">{{ form.registration_number.label }}</label>
+                        {{ form.registration_number }}
+                        {% if form.registration_number.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.registration_number.errors %}{{ error }} {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="form-text small">{{ form.registration_number.help_text }}</div>
+                    </div>
+
+                    <!-- Model Name -->
+                    <div class="col-12 col-md-6">
+                        <label for="{{ form.model_name.id_for_label }}" class="form-label fw-semibold text-secondary" style="font-size: 0.85rem;">{{ form.model_name.label }}</label>
+                        {{ form.model_name }}
+                        {% if form.model_name.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.model_name.errors %}{{ error }} {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="form-text small">{{ form.model_name.help_text }}</div>
+                    </div>
+
+                    <!-- Vehicle Type -->
+                    <div class="col-12 col-md-6">
+                        <label for="{{ form.vehicle_type.id_for_label }}" class="form-label fw-semibold text-secondary" style="font-size: 0.85rem;">{{ form.vehicle_type.label }}</label>
+                        {{ form.vehicle_type }}
+                        {% if form.vehicle_type.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.vehicle_type.errors %}{{ error }} {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="form-text small">{{ form.vehicle_type.help_text }}</div>
+                    </div>
+
+                    <!-- Max Load Capacity -->
+                    <div class="col-12 col-md-6">
+                        <label for="{{ form.max_load_capacity.id_for_label }}" class="form-label fw-semibold text-secondary" style="font-size: 0.85rem;">{{ form.max_load_capacity.label }}</label>
+                        <div class="input-group">
+                            {{ form.max_load_capacity }}
+                            <span class="input-group-text bg-light text-secondary">kg</span>
+                        </div>
+                        {% if form.max_load_capacity.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.max_load_capacity.errors %}{{ error }} {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="form-text small">{{ form.max_load_capacity.help_text }}</div>
+                    </div>
+
+                    <!-- Current Odometer -->
+                    <div class="col-12 col-md-6">
+                        <label for="{{ form.current_odometer.id_for_label }}" class="form-label fw-semibold text-secondary" style="font-size: 0.85rem;">{{ form.current_odometer.label }}</label>
+                        <div class="input-group">
+                            {{ form.current_odometer }}
+                            <span class="input-group-text bg-light text-secondary">km</span>
+                        </div>
+                        {% if form.current_odometer.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.current_odometer.errors %}{{ error }} {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="form-text small">{{ form.current_odometer.help_text }}</div>
+                    </div>
+
+                    <!-- Acquisition Cost -->
+                    <div class="col-12 col-md-6">
+                        <label for="{{ form.acquisition_cost.id_for_label }}" class="form-label fw-semibold text-secondary" style="font-size: 0.85rem;">{{ form.acquisition_cost.label }}</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-secondary">₹</span>
+                            {{ form.acquisition_cost }}
+                        </div>
+                        {% if form.acquisition_cost.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.acquisition_cost.errors %}{{ error }} {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="form-text small">{{ form.acquisition_cost.help_text }}</div>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="col-12">
+                        <label for="{{ form.status.id_for_label }}" class="form-label fw-semibold text-secondary" style="font-size: 0.85rem;">{{ form.status.label }}</label>
+                        {{ form.status }}
+                        {% if form.status.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.status.errors %}{{ error }} {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="form-text small">{{ form.status.help_text }}</div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
+                    <a href="{% if object %}{% url 'vehicles:detail' object.pk %}{% else %}{% url 'vehicles:list' %}{% endif %}" class="btn btn-outline-secondary px-4 fw-semibold">Cancel</a>
+                    <button type="submit" class="btn btn-primary px-4 fw-semibold border-0" style="background: var(--primary-gradient);">
+                        {% if object %}Save Changes{% else %}Add Vehicle{% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

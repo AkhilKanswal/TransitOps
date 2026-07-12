@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete {{ driver.full_name }} - TransitOps{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <a href="{% url 'drivers:detail' driver.pk %}" class="text-decoration-none text-secondary small d-inline-flex align-items-center gap-1 mb-2">
+        <i class="bi bi-arrow-left"></i> Cancel and Go Back
+    </a>
+    <h1 class="page-title">Delete Driver Profile</h1>
+    <p class="page-subtitle">Permanently remove driver record from TransitOps.</p>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+        <div class="custom-card border-0 text-center p-4">
+            <div class="d-inline-flex align-items-center justify-content-center mb-4 text-danger bg-danger-subtle rounded-circle" style="width: 80px; height: 80px; font-size: 2.5rem;">
+                <i class="bi bi-person-x-fill"></i>
+            </div>
+
+            <h3 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif;">Are you absolutely sure?</h3>
+            <p class="text-secondary mb-4">
+                You are about to delete driver <strong class="text-dark">{{ driver.full_name }}</strong> (License: {{ driver.license_number }}). This action is permanent and cannot be undone. All active trip historical associations will be preserved but the driver profile will be removed.
+            </p>
+
+            <form method="post" class="d-flex justify-content-center gap-3">
+                {% csrf_token %}
+                <a href="{% url 'drivers:detail' driver.pk %}" class="btn btn-outline-secondary px-4 py-2 fw-semibold">Cancel</a>
+                <button type="submit" class="btn btn-danger px-4 py-2 fw-semibold">Confirm Delete</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
