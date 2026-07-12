@@ -12,7 +12,7 @@ class VehicleListView(ListView):
     filtering, sorting, and pagination (10 per page).
     """
     model = Vehicle
-    template_name = 'vehicles/vehicle_list.html'
+    template_name = 'vehicles/list.html'
     context_object_name = 'vehicles'
     paginate_by = 10
     ordering = ['-created_at']

@@ -3,75 +3,276 @@
 {% load static %}
 
 {% block extra_css %}
+<style>
+    .page-container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
 
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .page-header h1 {
+        font-size: 32px;
+        font-weight: 700;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .add-btn {
+        text-decoration: none;
+        background-color: #2563eb;
+        color: white;
+        padding: 12px 18px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: 0.3s ease;
+    }
+
+    .add-btn:hover {
+        background-color: #1d4ed8;
+        color: white;
+    }
+
+    .filter-form {
+        margin-bottom: 20px;
+    }
+
+    .search-box-input {
+        width: 100%;
+        max-width: 320px;
+        padding: 10px 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        outline: none;
+        font-size: 15px;
+    }
+
+    .table-container {
+        background-color: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        margin-bottom: 30px;
+    }
+
+    .trips-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .trips-table thead {
+        background-color: #1e293b;
+        color: white;
+    }
+
+    .trips-table th,
+    .trips-table td {
+        padding: 16px;
+        text-align: left;
+    }
+
+    .trips-table tbody tr {
+        border-bottom: 1px solid #e5e7eb;
+        transition: background-color 0.2s;
+    }
+
+    .trips-table tbody tr:hover {
+        background-color: #f8fafc;
+    }
+
+    .status {
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .status.draft {
+        background-color: #f1f5f9;
+        color: #475569;
+    }
+
+    .status.dispatched {
+        background-color: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .status.completed {
+        background-color: #dcfce7;
+        color: #166534;
+    }
+
+    .status.cancelled {
+        background-color: #fee2e2;
+        color: #991b1b;
+    }
+
+    .actions {
+        display: flex;
+        gap: 12px;
+    }
+
+    .actions a {
+        text-decoration: none;
+        color: #2563eb;
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+
+    .actions a:hover {
+        text-decoration: underline;
+    }
+
+    .actions .delete-action {
+        color: #dc2626;
+    }
+</style>
 {% endblock extra_css %}
 
-
+{% block content %}
 <div class="page-container">
 
     <div class="page-header">
-        <h1>Vehicles</h1>
+        <h1>Operational Trips</h1>
     
-        <a href="{% url 'vehicles:add' %}" class="add-btn">
-            + Add Vehicle
+        <a href="{% url 'trips:create' %}" class="add-btn">
+            + Create Trip
         </a> 
     </div>
 
-    <div class="search-box">
-        <input type="text" placeholder="Search Vehicles...">
+    <!-- Messages Block -->
+    {% if messages %}
+    <div class="row">
+        <div class="col-12">
+            {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
     </div>
+    {% endif %}
+
+    <!-- Search & Filter Form -->
+    <form method="get" action="{% url 'trips:list' %}" class="filter-form d-flex flex-wrap gap-2 align-items-center">
+        <div>
+            <input type="text" name="q" value="{{ q }}" class="search-box-input" placeholder="Search by ID, route, vehicle...">
+        </div>
+        
+        <!-- Status Filter -->
+        <div>
+            <select name="status" class="form-select bg-light" style="min-width: 160px; height: 44px; border-radius: 8px;">
+                <option value="">All Statuses</option>
+                {% for val, label in status_choices %}
+                <option value="{{ val }}" {% if val == selected_status %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-dark fw-semibold" style="height: 44px; border-radius: 8px; padding: 0 20px;">Filter</button>
+        <a href="{% url 'trips:list' %}" class="btn btn-outline-secondary d-inline-flex align-items-center justify-content-center" style="height: 44px; width: 44px; border-radius: 8px;" title="Reset Filters">
+            <i class="bi bi-arrow-clockwise"></i>
+        </a>
+    </form>
 
     <div class="table-container">
-
-        <table class="Vehicles-table">
-
+        <table class="trips-table">
             <thead>
                 <tr>
-                    <th>Registration Number</th>
-                    <th>Chasis Number</th>
-                    <th>Year of Registration</th>
-                    <th>Year of Registration Expire</th>
+                    <th>Trip ID</th>
+                    <th>Vehicle</th>
+                    <th>Driver</th>
+                    <th>Route</th>
+                    <th>Cargo Weight</th>
+                    <th>Distance</th>
+                    <th>Revenue</th>
                     <th>Status</th>
                     <th>Actions</th>
-                    <th>Emssion Type</th>
-                    <th>Body Type</th>
-                    <th>Capicity</th>
                 </tr>
             </thead>
             
             <tbody>
-                
-                {% for vehicle in vehicles %}
+                {% for trip in trips %}
                 <tr>
-                    <th>{{vehicle.RegistrationNumber}}</th>
-                    <th>{{vehicle.vehicleChasisNumber}}</th>
-                    <th>{{vehicle.YearOfRegistration}}</th>
-                    <th>{{vehicle.YearOfRegistrationExpire}}</th>
-                    <th>{{vehicle.Status}}</th>
-                    <th>{{vehicle.isActions}}</th>
-                    <th>{{vehicle.EmssionType}}</th>
-                    <th>{{vehicle.BodyType}}</th>
-                    <th>{{vehicle.Capicity}}</th>
-
-
+                    <td class="fw-bold">
+                        <a href="{% url 'trips:detail' trip.pk %}" class="text-indigo text-decoration-none">#{{ trip.id }}</a>
+                    </td>
+                    <td>{{ trip.vehicle.registration_number }}</td>
+                    <td>{{ trip.driver.full_name }}</td>
+                    <td>{{ trip.source }} &rarr; {{ trip.destination }}</td>
+                    <td>{{ trip.cargo_weight }} kg</td>
+                    <td>{{ trip.planned_distance }} km</td>
+                    <td>₹{{ trip.revenue }}</td>
                     <td>
-                        <span class="availivility active">
-                            {{isActive}}
-                        </span>
+                        {% if trip.status == 'DRAFT' %}
+                        <span class="status draft">Draft</span>
+                        {% elif trip.status == 'DISPATCHED' %}
+                        <span class="status dispatched">Dispatched</span>
+                        {% elif trip.status == 'COMPLETED' %}
+                        <span class="status completed">Completed</span>
+                        {% else %}
+                        <span class="status cancelled">Cancelled</span>
+                        {% endif %}
                     </td>
-
                     <td class="actions">
-                        <a href="#">View</a>
-                        <a href="#">Edit</a>
+                        <a href="{% url 'trips:detail' trip.pk %}">View</a>
+                        {% if trip.status == 'DRAFT' %}
+                        <a href="{% url 'trips:update' trip.pk %}">Edit</a>
+                        <a href="{% url 'trips:delete' trip.pk %}" class="delete-action">Delete</a>
+                        {% endif %}
                     </td>
-
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="9" class="text-center py-5 text-secondary">
+                        <i class="bi bi-map display-4 d-block mb-3 opacity-25"></i>
+                        No trips found matching the criteria.
+                    </td>
                 </tr>
                 {% endfor %}
-
             </tbody>
-
         </table>
-
     </div>
 
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <nav aria-label="Page navigation" class="d-flex justify-content-center">
+        <ul class="pagination shadow-sm">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link text-dark" href="?page=1{% if q %}&q={{ q }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}">&laquo;&laquo;</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link text-dark" href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}">&laquo;</a>
+            </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <li class="page-item active"><span class="page-link border-0 text-white" style="background: #2563eb;">{{ num }}</span></li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item"><a class="page-link text-dark" href="?page={{ num }}{% if q %}&q={{ q }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}">{{ num }}</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link text-dark" href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}">&raquo;</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link text-dark" href="?page={{ page_obj.paginator.num_pages }}{% if q %}&q={{ q }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}">&raquo;&raquo;</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
 </div>
+{% endblock %}

@@ -12,7 +12,7 @@ class DriverListView(ListView):
     filtering, sorting, and pagination (10 per page).
     """
     model = Driver
-    template_name = 'drivers/driver_list.html'
+    template_name = 'drivers/list.html'
     context_object_name = 'drivers'
     paginate_by = 10
     ordering = ['-created_at']

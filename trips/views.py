@@ -18,7 +18,7 @@ class TripListView(ListView):
     Lists operational trips with searching, filtering, and pagination.
     """
     model = Trip
-    template_name = 'trips/trip_list.html'
+    template_name = 'trips/list.html'
     context_object_name = 'trips'
     paginate_by = 10
     ordering = ['-created_at']

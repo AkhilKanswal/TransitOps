@@ -1,9 +1,27 @@
-from django.http import HttpResponse
 from django.shortcuts import render
+from vehicles.models import Vehicle
+from drivers.models import Driver
+from trips.models import Trip
 
-# Placeholder view for dashboard
 def dashboard_home(request):
     """
-    Placeholder view for the TransitOps Dashboard homepage.
+    Renders the operational dashboard with real fleet statistics.
     """
-    return HttpResponse("<h1>TransitOps Dashboard</h1><p>Welcome to the Dashboard module.</p>")
+    total_drivers = Driver.objects.count()
+    active_vehicles = Vehicle.objects.filter(
+        status__in=[Vehicle.VehicleStatus.AVAILABLE, Vehicle.VehicleStatus.ON_TRIP]
+    ).count()
+    ongoing_trips = Trip.objects.filter(status=Trip.TripStatus.DISPATCHED).count()
+    total_alerts = Vehicle.objects.filter(
+        status__in=[Vehicle.VehicleStatus.IN_SHOP, Vehicle.VehicleStatus.RETIRED]
+    ).count()
+    recent_trips = Trip.objects.all().order_by('-created_at')[:5]
+
+    context = {
+        'total_drivers': total_drivers,
+        'active_vehicles': active_vehicles,
+        'ongoing_trips': ongoing_trips,
+        'total_alerts': total_alerts,
+        'recent_trips': recent_trips,
+    }
+    return render(request, 'dashboard/dashboard.html', context)

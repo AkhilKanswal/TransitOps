@@ -19,6 +19,7 @@ urlpatterns = [
 
     # Custom App URL mappings
     path('accounts/', include('accounts.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
     path('dashboard/', include('dashboard.urls')),
     path('vehicles/', include('vehicles.urls')),
     path('drivers/', include('drivers.urls')),
