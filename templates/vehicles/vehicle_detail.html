@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ vehicle.registration_number }} Detail - TransitOps{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <a href="{% url 'vehicles:list' %}" class="text-decoration-none text-secondary small d-inline-flex align-items-center gap-1 mb-2">
+            <i class="bi bi-arrow-left"></i> Back to Fleet
+        </a>
+        <h1 class="page-title">{{ vehicle.registration_number }}</h1>
+        <p class="page-subtitle">{{ vehicle.model_name }} &bull; {{ vehicle.vehicle_type }}</p>
+    </div>
+    <div class="d-inline-flex gap-2">
+        <a href="{% url 'vehicles:update' vehicle.pk %}" class="btn btn-outline-primary d-flex align-items-center gap-2 fw-semibold">
+            <i class="bi bi-pencil-fill"></i>
+            <span>Edit Vehicle</span>
+        </a>
+        <a href="{% url 'vehicles:delete' vehicle.pk %}" class="btn btn-outline-danger d-flex align-items-center gap-2 fw-semibold">
+            <i class="bi bi-trash-fill"></i>
+            <span>Delete</span>
+        </a>
+    </div>
+</div>
+
+<!-- Success Message (especially after update redirects here) -->
+{% if messages %}
+<div class="row">
+    <div class="col-12">
+        {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<div class="row g-4">
+    <!-- Vehicle Summary Card -->
+    <div class="col-12 col-lg-8">
+        <div class="custom-card border-0 mb-4">
+            <h3 class="fw-bold mb-4" style="font-family: 'Outfit', sans-serif;">Specifications</h3>
+            
+            <div class="row g-4">
+                <div class="col-12 col-sm-6">
+                    <div class="p-3 bg-light rounded-3 d-flex align-items-center gap-3">
+                        <div class="p-2.5 rounded-3 bg-primary text-white" style="font-size: 1.5rem; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-box-seam"></i>
+                        </div>
+                        <div>
+                            <div class="text-secondary small fw-medium">Max Load Capacity</div>
+                            <div class="fw-bold fs-5">{{ vehicle.max_load_capacity }} kg</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6">
+                    <div class="p-3 bg-light rounded-3 d-flex align-items-center gap-3">
+                        <div class="p-2.5 rounded-3 bg-success text-white" style="font-size: 1.5rem; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-speedometer"></i>
+                        </div>
+                        <div>
+                            <div class="text-secondary small fw-medium">Current Odometer</div>
+                            <div class="fw-bold fs-5">{{ vehicle.current_odometer }} km</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6">
+                    <div class="p-3 bg-light rounded-3 d-flex align-items-center gap-3">
+                        <div class="p-2.5 rounded-3 bg-info text-white" style="font-size: 1.5rem; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-cash-coin"></i>
+                        </div>
+                        <div>
+                            <div class="text-secondary small fw-medium">Acquisition Cost</div>
+                            <div class="fw-bold fs-5">₹{{ vehicle.acquisition_cost }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6">
+                    <div class="p-3 bg-light rounded-3 d-flex align-items-center gap-3">
+                        <div class="p-2.5 rounded-3 bg-secondary text-white" style="font-size: 1.5rem; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-calendar3"></i>
+                        </div>
+                        <div>
+                            <div class="text-secondary small fw-medium">Registration Date</div>
+                            <div class="fw-bold fs-5">{{ vehicle.created_at|date:"M d, Y" }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vehicle Status & History Sidebar -->
+    <div class="col-12 col-lg-4">
+        <div class="custom-card border-0 mb-4 h-100">
+            <h3 class="fw-bold mb-4" style="font-family: 'Outfit', sans-serif;">Operational Status</h3>
+            
+            <div class="text-center p-4 rounded-3 bg-light mb-4">
+                {% if vehicle.status == 'AVAILABLE' %}
+                <span class="d-inline-flex p-3 rounded-circle bg-success text-white mb-3" style="font-size: 2rem;">
+                    <i class="bi bi-check-circle"></i>
+                </span>
+                <h4 class="fw-bold text-success">Available</h4>
+                <p class="text-secondary small mb-0">Ready to be assigned to active operational trips.</p>
+                
+                {% elif vehicle.status == 'ON_TRIP' %}
+                <span class="d-inline-flex p-3 rounded-circle bg-warning text-white mb-3" style="font-size: 2rem;">
+                    <i class="bi bi-truck"></i>
+                </span>
+                <h4 class="fw-bold text-warning">On Trip</h4>
+                <p class="text-secondary small mb-0">Currently executing an active transit route.</p>
+
+                {% elif vehicle.status == 'IN_SHOP' %}
+                <span class="d-inline-flex p-3 rounded-circle bg-danger text-white mb-3" style="font-size: 2rem;">
+                    <i class="bi bi-wrench-adjustable"></i>
+                </span>
+                <h4 class="fw-bold text-danger">In Shop</h4>
+                <p class="text-secondary small mb-0">Currently undergoing maintenance servicing.</p>
+
+                {% else %}
+                <span class="d-inline-flex p-3 rounded-circle bg-secondary text-white mb-3" style="font-size: 2rem;">
+                    <i class="bi bi-dash-circle"></i>
+                </span>
+                <h4 class="fw-bold text-secondary">Retired</h4>
+                <p class="text-secondary small mb-0">Permanently removed from active operations.</p>
+                {% endif %}
+            </div>
+
+            <div class="border-top pt-3 text-secondary small">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Created Date:</span>
+                    <span class="fw-semibold text-dark">{{ vehicle.created_at|date:"Y-m-d H:i" }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>Last Updated:</span>
+                    <span class="fw-semibold text-dark">{{ vehicle.updated_at|date:"Y-m-d H:i" }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
