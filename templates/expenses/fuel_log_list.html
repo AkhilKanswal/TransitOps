@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block title %}Fuel Logs - TransitOps{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="page-title">Fuel Logs</h1>
+        <p class="page-subtitle">Track refueling records, liters purchased, and fuel costs.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'expenses:list' %}" class="btn btn-outline-secondary d-flex align-items-center gap-2 fw-semibold">
+            <i class="bi bi-receipt"></i>
+            <span>Expenses</span>
+        </a>
+        <a href="{% url 'expenses:fuel_create' %}" class="btn btn-primary d-flex align-items-center gap-2 border-0 fw-semibold" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); box-shadow: 0 4px 14px rgba(124, 58, 237, 0.3);">
+            <i class="bi bi-plus-lg"></i>
+            <span>Log Fuel</span>
+        </a>
+    </div>
+</div>
+
+{% if messages %}
+<div class="row">
+    <div class="col-12">
+        {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<div class="custom-card mb-4 border-0">
+    <form method="get" action="{% url 'expenses:fuel_list' %}" class="row g-3 align-items-end">
+        <div class="col-12 col-md-5">
+            <label for="searchQuery" class="form-label fw-semibold text-secondary" style="font-size: 0.85rem;">Search</label>
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-secondary"></i></span>
+                <input type="text" class="form-control bg-light border-start-0 ps-0" id="searchQuery" name="q" value="{{ q }}" placeholder="Vehicle registration or route...">
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-4">
+            <label for="vehicleFilter" class="form-label fw-semibold text-secondary" style="font-size: 0.85rem;">Vehicle</label>
+            <select class="form-select bg-light" id="vehicleFilter" name="vehicle">
+                <option value="">All Vehicles</option>
+                {% for vehicle in vehicles %}
+                <option value="{{ vehicle.pk }}" {% if vehicle.pk|stringformat:"s" == selected_vehicle %}selected{% endif %}>{{ vehicle.registration_number }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-12 col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-dark w-100 fw-semibold">Filter</button>
+            <a href="{% url 'expenses:fuel_list' %}" class="btn btn-outline-secondary w-100 fw-semibold d-flex align-items-center justify-content-center" title="Reset Filters">
+                <i class="bi bi-arrow-clockwise"></i>
+            </a>
+        </div>
+    </form>
+</div>
+
+{% if total_liters or total_cost %}
+<div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6">
+        <div class="custom-card border-0 py-3 px-4 d-flex align-items-center justify-content-between">
+            <span class="text-secondary fw-medium">Total Liters</span>
+            <span class="fw-bold fs-5 text-primary">{{ total_liters }}L</span>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6">
+        <div class="custom-card border-0 py-3 px-4 d-flex align-items-center justify-content-between">
+            <span class="text-secondary fw-medium">Total Cost</span>
+            <span class="fw-bold fs-5 text-primary">₹{{ total_cost }}</span>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="custom-card border-0 p-0 overflow-hidden mb-4">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light text-secondary" style="font-size: 0.85rem; letter-spacing: 0.5px;">
+                <tr>
+                    <th class="ps-4 py-3">DATE</th>
+                    <th class="py-3">VEHICLE</th>
+                    <th class="py-3">TRIP</th>
+                    <th class="py-3">LITERS</th>
+                    <th class="py-3">COST</th>
+                    <th class="pe-4 py-3 text-end">ACTIONS</th>
+                </tr>
+            </thead>
+            <tbody style="font-size: 0.925rem;">
+                {% for fuel_log in fuel_logs %}
+                <tr>
+                    <td class="ps-4">{{ fuel_log.log_date|date:"M d, Y" }}</td>
+                    <td class="fw-semibold">
+                        <a href="{% url 'expenses:fuel_detail' fuel_log.pk %}" class="text-decoration-none text-primary">{{ fuel_log.vehicle.registration_number }}</a>
+                    </td>
+                    <td>
+                        {% if fuel_log.trip %}
+                        <span class="text-secondary">{{ fuel_log.trip.source }} → {{ fuel_log.trip.destination }}</span>
+                        {% else %}
+                        <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ fuel_log.fuel_liters }}L</td>
+                    <td class="fw-semibold">₹{{ fuel_log.fuel_cost }}</td>
+                    <td class="pe-4 text-end">
+                        <div class="d-inline-flex gap-2">
+                            <a href="{% url 'expenses:fuel_detail' fuel_log.pk %}" class="btn btn-sm btn-outline-secondary px-2" title="View"><i class="bi bi-eye-fill"></i></a>
+                            <a href="{% url 'expenses:fuel_update' fuel_log.pk %}" class="btn btn-sm btn-outline-primary px-2" title="Edit"><i class="bi bi-pencil-fill"></i></a>
+                            <a href="{% url 'expenses:fuel_delete' fuel_log.pk %}" class="btn btn-sm btn-outline-danger px-2" title="Delete"><i class="bi bi-trash-fill"></i></a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-5 text-secondary">
+                        <i class="bi bi-fuel-pump display-4 d-block mb-3 opacity-25"></i>
+                        No fuel logs found matching the filter criteria.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% if is_paginated %}
+<nav aria-label="Page navigation" class="d-flex justify-content-center">
+    <ul class="pagination shadow-sm">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-item page-link text-dark" href="?page=1{% if q %}&q={{ q }}{% endif %}{% if selected_vehicle %}&vehicle={{ selected_vehicle }}{% endif %}">&laquo;&laquo;</a>
+        </li>
+        <li class="page-item">
+            <a class="page-item page-link text-dark" href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if selected_vehicle %}&vehicle={{ selected_vehicle }}{% endif %}">&laquo;</a>
+        </li>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li class="page-item active"><span class="page-link border-0 text-white" style="background: var(--primary-gradient);">{{ num }}</span></li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <li class="page-item"><a class="page-link text-dark" href="?page={{ num }}{% if q %}&q={{ q }}{% endif %}{% if selected_vehicle %}&vehicle={{ selected_vehicle }}{% endif %}">{{ num }}</a></li>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-item page-link text-dark" href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if selected_vehicle %}&vehicle={{ selected_vehicle }}{% endif %}">&raquo;</a>
+        </li>
+        <li class="page-item">
+            <a class="page-item page-link text-dark" href="?page={{ page_obj.paginator.num_pages }}{% if q %}&q={{ q }}{% endif %}{% if selected_vehicle %}&vehicle={{ selected_vehicle }}{% endif %}">&raquo;&raquo;</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}
