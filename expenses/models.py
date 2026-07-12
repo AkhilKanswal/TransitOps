@@ -50,6 +50,10 @@ class Expense(models.Model):
         verbose_name="Remarks",
         help_text="Any additional description or justification for the expense."
     )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Created At"
+    )
 
     class Meta:
         ordering = ['-expense_date']
@@ -95,6 +99,10 @@ class FuelLog(models.Model):
     log_date = models.DateField(
         verbose_name="Log Date",
         help_text="The date when fuel was logged."
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Created At"
     )
 
     class Meta:
