@@ -1,8 +1,10 @@
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 from vehicles.models import Vehicle
 from drivers.models import Driver
 from trips.models import Trip
 
+@login_required
 def dashboard_home(request):
     """
     Renders the operational dashboard with real fleet statistics.

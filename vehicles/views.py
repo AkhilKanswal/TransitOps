@@ -1,12 +1,13 @@
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
 from django.db.models import Q
 from .models import Vehicle
 from .forms import VehicleForm
 
-class VehicleListView(ListView):
+class VehicleListView(LoginRequiredMixin, ListView):
     """
     Renders the list of fleet vehicles with support for searching,
     filtering, sorting, and pagination (10 per page).
@@ -53,7 +54,7 @@ class VehicleListView(ListView):
         return context
 
 
-class VehicleDetailView(DetailView):
+class VehicleDetailView(LoginRequiredMixin, DetailView):
     """
     Renders detailed information for a specific vehicle.
     """
@@ -62,7 +63,7 @@ class VehicleDetailView(DetailView):
     context_object_name = 'vehicle'
 
 
-class VehicleCreateView(SuccessMessageMixin, CreateView):
+class VehicleCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     """
     Allows fleet managers to add new vehicles.
     """
@@ -73,7 +74,7 @@ class VehicleCreateView(SuccessMessageMixin, CreateView):
     success_message = "Vehicle %(registration_number)s was added successfully."
 
 
-class VehicleUpdateView(SuccessMessageMixin, UpdateView):
+class VehicleUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     """
     Allows fleet managers to modify existing vehicle records.
     """
@@ -89,7 +90,7 @@ class VehicleUpdateView(SuccessMessageMixin, UpdateView):
         return f"Vehicle {self.object.registration_number} was updated successfully."
 
 
-class VehicleDeleteView(DeleteView):
+class VehicleDeleteView(LoginRequiredMixin, DeleteView):
     """
     Allows deletion of a vehicle record. Handles success message safely.
     """

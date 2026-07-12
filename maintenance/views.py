@@ -2,6 +2,7 @@ import datetime
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
@@ -12,7 +13,7 @@ from vehicles.models import Vehicle
 from .models import Maintenance
 from .forms import MaintenanceForm
 
-class MaintenanceListView(ListView):
+class MaintenanceListView(LoginRequiredMixin, ListView):
     """
     Lists maintenance records with searching, filtering, and pagination.
     """
@@ -58,7 +59,7 @@ class MaintenanceListView(ListView):
         return context
 
 
-class MaintenanceDetailView(DetailView):
+class MaintenanceDetailView(LoginRequiredMixin, DetailView):
     """
     Displays details for a specific maintenance record.
     """
@@ -67,7 +68,7 @@ class MaintenanceDetailView(DetailView):
     context_object_name = 'maintenance'
 
 
-class MaintenanceCreateView(SuccessMessageMixin, CreateView):
+class MaintenanceCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     """
     Allows scheduling or recording vehicle maintenance.
     """
@@ -99,7 +100,7 @@ class MaintenanceCreateView(SuccessMessageMixin, CreateView):
             return response
 
 
-class MaintenanceUpdateView(SuccessMessageMixin, UpdateView):
+class MaintenanceUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     """
     Allows updating maintenance details.
     """
@@ -137,7 +138,7 @@ class MaintenanceUpdateView(SuccessMessageMixin, UpdateView):
             return response
 
 
-class MaintenanceDeleteView(DeleteView):
+class MaintenanceDeleteView(LoginRequiredMixin, DeleteView):
     """
     Allows deleting maintenance records.
     """
@@ -151,7 +152,7 @@ class MaintenanceDeleteView(DeleteView):
         return super().delete(request, *args, **kwargs)
 
 
-class MaintenanceTransitionView(View):
+class MaintenanceTransitionView(LoginRequiredMixin, View):
     """
     Handles inline status changes (start, close, cancel) inside database transactions.
     """

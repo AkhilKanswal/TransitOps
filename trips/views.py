@@ -1,6 +1,7 @@
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
@@ -13,7 +14,7 @@ from drivers.models import Driver
 from .models import Trip
 from .forms import TripForm
 
-class TripListView(ListView):
+class TripListView(LoginRequiredMixin, ListView):
     """
     Lists operational trips with searching, filtering, and pagination.
     """
@@ -72,7 +73,7 @@ class TripListView(ListView):
         return context
 
 
-class TripDetailView(DetailView):
+class TripDetailView(LoginRequiredMixin, DetailView):
     """
     Displays detail information for a specific operational trip.
     """
@@ -81,7 +82,7 @@ class TripDetailView(DetailView):
     context_object_name = 'trip'
 
 
-class TripCreateView(SuccessMessageMixin, CreateView):
+class TripCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     """
     Allows managers to register/create new trips in DRAFT status.
     """
@@ -97,7 +98,7 @@ class TripCreateView(SuccessMessageMixin, CreateView):
         return super().form_valid(form)
 
 
-class TripUpdateView(SuccessMessageMixin, UpdateView):
+class TripUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     """
     Allows editing of Trips. ONLY trips in DRAFT status can be modified.
     """
@@ -119,7 +120,7 @@ class TripUpdateView(SuccessMessageMixin, UpdateView):
         return f"Trip #{self.object.id} was updated successfully."
 
 
-class TripDeleteView(DeleteView):
+class TripDeleteView(LoginRequiredMixin, DeleteView):
     """
     Allows deletion of Trips. ONLY trips in DRAFT status can be deleted.
     """
@@ -140,7 +141,7 @@ class TripDeleteView(DeleteView):
         return super().delete(request, *args, **kwargs)
 
 
-class TripTransitionView(View):
+class TripTransitionView(LoginRequiredMixin, View):
     """
     Handles lifecycle state changes (dispatch, complete, cancel) for Trips inside database transactions.
     """

@@ -1,12 +1,13 @@
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
 from django.db.models import Q
 from .models import Driver
 from .forms import DriverForm
 
-class DriverListView(ListView):
+class DriverListView(LoginRequiredMixin, ListView):
     """
     Renders the list of drivers with support for searching,
     filtering, sorting, and pagination (10 per page).
@@ -53,7 +54,7 @@ class DriverListView(ListView):
         return context
 
 
-class DriverDetailView(DetailView):
+class DriverDetailView(LoginRequiredMixin, DetailView):
     """
     Renders detailed information for a specific driver.
     """
@@ -62,7 +63,7 @@ class DriverDetailView(DetailView):
     context_object_name = 'driver'
 
 
-class DriverCreateView(SuccessMessageMixin, CreateView):
+class DriverCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     """
     Allows operations managers to add/register new drivers.
     """
@@ -73,7 +74,7 @@ class DriverCreateView(SuccessMessageMixin, CreateView):
     success_message = "Driver %(full_name)s was registered successfully."
 
 
-class DriverUpdateView(SuccessMessageMixin, UpdateView):
+class DriverUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     """
     Allows operations managers to modify existing driver records.
     """
@@ -89,7 +90,7 @@ class DriverUpdateView(SuccessMessageMixin, UpdateView):
         return f"Driver {self.object.full_name} was updated successfully."
 
 
-class DriverDeleteView(DeleteView):
+class DriverDeleteView(LoginRequiredMixin, DeleteView):
     """
     Allows operations managers to delete a driver record.
     """
