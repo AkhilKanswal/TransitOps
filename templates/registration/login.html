@@ -18,6 +18,18 @@
             <form method="post" action=".">
                 {% csrf_token %}
                 
+                {% if form.errors or form.non_field_errors %}
+                <div class="alert alert-danger border-0 shadow-sm mb-3 text-start small">
+                    {% if form.non_field_errors %}
+                        {% for error in form.non_field_errors %}
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ error }}
+                        {% endfor %}
+                    {% else %}
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>Your username and password didn't match. Please try again.
+                    {% endif %}
+                </div>
+                {% endif %}
+                
                 <div class="mb-3">
                     <label for="username" class="form-label fw-semibold text-secondary" style="font-size: 0.85rem;">Username / Email</label>
                     <div class="input-group">

@@ -25,7 +25,7 @@ class TripListView(LoginRequiredMixin, ListView):
     ordering = ['-created_at']
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().select_related('vehicle', 'driver')
 
         # 1. Search Query (Trip ID, Vehicle registration, Driver name, Source, Destination)
         search_query = self.request.GET.get('q', '').strip()

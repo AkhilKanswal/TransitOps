@@ -24,7 +24,7 @@ class MaintenanceListView(LoginRequiredMixin, ListView):
     ordering = ['-created_at']
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().select_related('vehicle')
 
         # 1. Search (Vehicle registration, Issue title)
         search_query = self.request.GET.get('q', '').strip()
