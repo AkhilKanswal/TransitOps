@@ -1,0 +1,103 @@
+# ==========================================
+# TransitOps Django 5.x Gitignore Configuration
+# ==========================================
+
+# 1. Python Cache & Compiled Files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 2. Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+ActiveState.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# 3. SQLite Database (Keep local development database out of source control)
+db.sqlite3
+db.sqlite3-journal
+
+# 4. Media Files & User Uploads (Ignore uploads, but keep the directory via .gitkeep)
+media/*
+!media/.gitkeep
+
+# 5. Environments, Credentials, & Secrets
+.env
+.env.local
+.env.*
+.secrets
+*.key
+*.pem
+
+# 6. IDEs & Editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.project
+.pydevproject
+.settings/
+*~
+*.bak
+*.orig
+
+# 7. Django Logs & Temporary Files
+*.log
+logs/
+run/
+out/
+tmp/
+
+# 8. Build, Packaging, and Distribution
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# 9. Testing, Coverage, and Pytest Cache
+.pytest_cache/
+.tox/
+.coverage
+.coverage.*
+.cache
+htmlcov/
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.run/
+
+# 10. OS-generated Files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# 11. Django Migrations Rule
+# DO NOT IGNORE MIGRATIONS! Django migration files are vital for database scheme sync in collaborative environments.
+# Thus, we do not add */migrations/* to this gitignore.

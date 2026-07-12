@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TransitOps{% endblock %} - Fleet & Transit Operations</title>
+    <!-- Google Fonts - Inter & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Custom Theme Styling -->
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            --sidebar-bg: #0f172a;
+            --sidebar-hover: #1e293b;
+            --accent-color: #8b5cf6;
+            --body-bg: #f8fafc;
+            --navbar-bg: #ffffff;
+            --text-muted: #64748b;
+            --card-shadow: 0 4px 20px -2px rgba(147, 51, 234, 0.08), 0 2px 8px -1px rgba(147, 51, 234, 0.04);
+            --transition-speed: 0.3s;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--body-bg);
+            color: #1e293b;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6, .brand-logo {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            min-height: 100vh;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            transition: transform var(--transition-speed) ease;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .sidebar-brand {
+            height: 70px;
+            display: flex;
+            align-items: center;
+            padding: 0 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: var(--primary-gradient);
+            color: white;
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-brand i {
+            font-size: 1.5rem;
+            margin-right: 0.75rem;
+        }
+
+        .sidebar-nav {
+            padding: 1.5rem 0.75rem;
+        }
+
+        .nav-header {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.35);
+            padding: 0.5rem 0.75rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 0.25rem;
+            font-weight: 500;
+            font-size: 0.925rem;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .sidebar-link i {
+            font-size: 1.2rem;
+            margin-right: 0.85rem;
+            transition: transform var(--transition-speed) ease;
+        }
+
+        .sidebar-link:hover {
+            background-color: var(--sidebar-hover);
+            color: #ffffff;
+        }
+
+        .sidebar-link:hover i {
+            transform: translateX(3px);
+            color: var(--accent-color);
+        }
+
+        .sidebar-link.active {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
+        }
+
+        .sidebar-link.active i {
+            color: white;
+        }
+
+        /* Main Content Wrapper */
+        .main-wrapper {
+            margin-left: 260px;
+            transition: margin-left var(--transition-speed) ease;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header / Navbar Styling */
+        .top-navbar {
+            height: 70px;
+            background-color: var(--navbar-bg);
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 99;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #475569;
+            cursor: pointer;
+            display: none;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .nav-notification {
+            position: relative;
+            font-size: 1.25rem;
+            color: #64748b;
+            cursor: pointer;
+            transition: color var(--transition-speed);
+        }
+
+        .nav-notification:hover {
+            color: #4f46e5;
+        }
+
+        .nav-notification .badge-dot {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 8px;
+            height: 8px;
+            background-color: #ef4444;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2);
+        }
+
+        /* Dashboard Main Layout */
+        .content-area {
+            flex-grow: 1;
+            padding: 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.25rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Footer styling */
+        footer {
+            padding: 1.5rem 2rem;
+            background-color: white;
+            border-top: 1px solid #e2e8f0;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        /* Card Custom Styling */
+        .custom-card {
+            background-color: white;
+            border: none;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            padding: 1.5rem;
+            transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+        }
+
+        .custom-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px -2px rgba(147, 51, 234, 0.12), 0 4px 12px -1px rgba(147, 51, 234, 0.06);
+        }
+
+        /* Mobile Responsive adjustments */
+        @media (max-width: 991.98px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .main-wrapper {
+                margin-left: 0;
+            }
+            .sidebar-toggle {
+                display: block;
+            }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <i class="bi bi-rocket-takeoff-fill"></i>
+            <span>TransitOps</span>
+        </div>
+        <div class="sidebar-nav">
+            <div class="nav-header">Operations</div>
+            
+            <a href="/dashboard/" class="sidebar-link {% if request.resolver_match.app_name == 'dashboard' %}active{% endif %}">
+                <i class="bi bi-grid-1x2-fill"></i>
+                <span>Dashboard</span>
+            </a>
+            
+            <a href="/trips/" class="sidebar-link {% if request.resolver_match.app_name == 'trips' %}active{% endif %}">
+                <i class="bi bi-map-fill"></i>
+                <span>Trips</span>
+            </a>
+
+            <a href="/vehicles/" class="sidebar-link {% if request.resolver_match.app_name == 'vehicles' %}active{% endif %}">
+                <i class="bi bi-truck"></i>
+                <span>Vehicles</span>
+            </a>
+
+            <a href="/drivers/" class="sidebar-link {% if request.resolver_match.app_name == 'drivers' %}active{% endif %}">
+                <i class="bi bi-people-fill"></i>
+                <span>Drivers</span>
+            </a>
+
+            <div class="nav-header">Management</div>
+
+            <a href="/maintenance/" class="sidebar-link {% if request.resolver_match.app_name == 'maintenance' %}active{% endif %}">
+                <i class="bi bi-tools"></i>
+                <span>Maintenance</span>
+            </a>
+
+            <a href="/expenses/" class="sidebar-link {% if request.resolver_match.app_name == 'expenses' %}active{% endif %}">
+                <i class="bi bi-cash-stack"></i>
+                <span>Expenses</span>
+            </a>
+
+            <div class="nav-header">Account</div>
+
+            <a href="/accounts/" class="sidebar-link {% if request.resolver_match.app_name == 'accounts' %}active{% endif %}">
+                <i class="bi bi-person-fill-gear"></i>
+                <span>Users & Profile</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+        <!-- Top Navbar -->
+        <header class="top-navbar">
+            <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle Sidebar">
+                <i class="bi bi-list"></i>
+            </button>
+            <div class="d-flex align-items-center">
+                <span class="fs-5 fw-semibold d-none d-md-inline-block">Transit Operations Panel</span>
+            </div>
+            
+            <!-- Navbar Actions -->
+            <div class="nav-actions">
+                <div class="nav-notification">
+                    <i class="bi bi-bell"></i>
+                    <span class="badge-dot"></span>
+                </div>
+                <div class="vr mx-1 text-secondary opacity-25"></div>
+                <a href="/accounts/" class="user-profile">
+                    <div class="user-avatar">AD</div>
+                    <div class="d-none d-sm-block">
+                        <div class="fw-semibold text-dark" style="font-size: 0.875rem;">Admin User</div>
+                        <div class="text-muted" style="font-size: 0.75rem;">Fleet Manager</div>
+                    </div>
+                </a>
+            </div>
+        </header>
+
+        <!-- Dynamic Content Body -->
+        <main class="content-area">
+            {% block content %}
+            <!-- Default Dashboard Content Placeholder -->
+            <div class="page-header">
+                <h1 class="page-title">Welcome to TransitOps</h1>
+                <p class="page-subtitle">Manage, monitor, and optimize your fleet operations seamlessly.</p>
+            </div>
+            {% endblock %}
+        </main>
+
+        <!-- Footer -->
+        <footer>
+            <div>&copy; 2026 TransitOps. Hackathon Project. All rights reserved.</div>
+        </footer>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper (CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    
+    <!-- Sidebar Toggle Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleBtn = document.getElementById('sidebarToggle');
+            const sidebar = document.getElementById('sidebar');
+            
+            if (toggleBtn && sidebar) {
+                toggleBtn.addEventListener('click', function(e) {
+                    sidebar.classList.toggle('active');
+                    e.stopPropagation();
+                });
+
+                // Close sidebar on mobile when clicking outside
+                document.addEventListener('click', function(event) {
+                    const isClickInside = sidebar.contains(event.target) || toggleBtn.contains(event.target);
+                    if (!isClickInside && window.innerWidth < 992) {
+                        sidebar.classList.remove('active');
+                    }
+                });
+            }
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

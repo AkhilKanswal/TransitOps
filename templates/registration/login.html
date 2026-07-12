@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - TransitOps{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="col-12 col-md-8 col-lg-5">
+        <div class="custom-card border-0">
+            <div class="text-center mb-4">
+                <div class="d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px; border-radius: 12px; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; font-size: 1.8rem; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);">
+                    <i class="bi bi-shield-lock-fill"></i>
+                </div>
+                <h2 class="fw-bold mb-1" style="font-family: 'Outfit', sans-serif;">Welcome Back</h2>
+                <p class="text-muted small">Access the TransitOps Fleet Portal</p>
+            </div>
+
+            <!-- Login Form Placeholder -->
+            <form method="post" action=".">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="username" class="form-label fw-semibold text-secondary" style="font-size: 0.85rem;">Username / Email</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-person text-secondary"></i></span>
+                        <input type="text" class="form-control bg-light border-start-0 ps-0" id="username" name="username" placeholder="Enter your username" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label for="password" class="form-label fw-semibold text-secondary mb-0" style="font-size: 0.85rem;">Password</label>
+                        <a href="#" class="text-decoration-none small text-primary" style="font-size: 0.8rem; color: #4f46e5 !important;">Forgot Password?</a>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock text-secondary"></i></span>
+                        <input type="password" class="form-control bg-light border-start-0 ps-0" id="password" name="password" placeholder="Enter your password" required>
+                    </div>
+                </div>
+
+                <div class="mb-4 d-flex justify-content-between align-items-center">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="rememberMe">
+                        <label class="form-check-label text-secondary small" for="rememberMe">Remember me</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2 border-0 fw-semibold" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);">
+                    Sign In
+                </button>
+            </form>
+
+            <div class="text-center mt-4 border-top pt-3 text-secondary" style="font-size: 0.85rem;">
+                Need help? <a href="#" class="text-decoration-none text-primary" style="color: #4f46e5 !important;">Contact Support</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
