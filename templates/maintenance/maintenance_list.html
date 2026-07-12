@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+
+{% block title %}Vehicle Maintenance - TransitOps{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="page-title">Vehicle Maintenance</h1>
+        <p class="page-subtitle">Schedule, trace, and manage fleet maintenance and repair workshops.</p>
+    </div>
+    <div>
+        <a href="{% url 'maintenance:create' %}" class="btn btn-primary d-flex align-items-center gap-2 border-0 fw-semibold" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); box-shadow: 0 4px 14px rgba(124, 58, 237, 0.3);">
+            <i class="bi bi-calendar-plus-fill"></i>
+            <span>Schedule Maintenance</span>
+        </a>
+    </div>
+</div>
+
+<!-- Success/Info Messages -->
+{% if messages %}
+<div class="row">
+    <div class="col-12">
+        {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Filters & Search Bar Card -->
+<div class="custom-card mb-4 border-0">
+    <form method="get" action="{% url 'maintenance:list' %}" class="row g-3 align-items-end">
+        <!-- Search Query -->
+        <div class="col-12 col-md-4">
+            <label for="searchQuery" class="form-label fw-semibold text-secondary" style="font-size: 0.85rem;">Search</label>
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-secondary"></i></span>
+                <input type="text" class="form-control bg-light border-start-0 ps-0" id="searchQuery" name="q" value="{{ q }}" placeholder="Vehicle registration or issue summary...">
+            </div>
+        </div>
+
+        <!-- Maintenance Type Filter -->
+        <div class="col-12 col-sm-6 col-md-3">
+            <label for="typeFilter" class="form-label fw-semibold text-secondary" style="font-size: 0.85rem;">Type</label>
+            <select class="form-select bg-light" id="typeFilter" name="maintenance_type">
+                <option value="">All Types</option>
+                {% for val, label in type_choices %}
+                <option value="{{ val }}" {% if val == selected_type %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Status Filter -->
+        <div class="col-12 col-sm-6 col-md-3">
+            <label for="statusFilter" class="form-label fw-semibold text-secondary" style="font-size: 0.85rem;">Status</label>
+            <select class="form-select bg-light" id="statusFilter" name="status">
+                <option value="">All Statuses</option>
+                {% for val, label in status_choices %}
+                <option value="{{ val }}" {% if val == selected_status %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="col-12 col-md-2 d-flex gap-2">
+            <button type="submit" class="btn btn-dark w-100 fw-semibold">Filter</button>
+            <a href="{% url 'maintenance:list' %}" class="btn btn-outline-secondary w-100 fw-semibold d-flex align-items-center justify-content-center" title="Reset Filters">
+                <i class="bi bi-arrow-clockwise"></i>
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- Maintenance Table -->
+<div class="custom-card border-0 p-0 overflow-hidden mb-4">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light text-secondary" style="font-size: 0.85rem; letter-spacing: 0.5px;">
+                <tr>
+                    <th class="ps-4 py-3">VEHICLE</th>
+                    <th class="py-3">ISSUE TITLE</th>
+                    <th class="py-3">SERVICE TYPE</th>
+                    <th class="py-3">EST. COST</th>
+                    <th class="py-3">ACT. COST</th>
+                    <th class="py-3">START DATE</th>
+                    <th class="py-3">END DATE</th>
+                    <th class="py-3">STATUS</th>
+                    <th class="pe-4 py-3 text-end">ACTIONS</th>
+                </tr>
+            </thead>
+            <tbody style="font-size: 0.925rem;">
+                {% for record in maintenances %}
+                <tr>
+                    <td class="ps-4 fw-semibold text-primary">
+                        <a href="{% url 'maintenance:detail' record.pk %}" class="text-decoration-none text-indigo">{{ record.vehicle.registration_number }}</a>
+                    </td>
+                    <td>{{ record.issue_title }}</td>
+                    <td>
+                        <span class="badge bg-light text-dark border px-2.5 py-1.5">{{ record.get_maintenance_type_display }}</span>
+                    </td>
+                    <td>₹{{ record.estimated_cost }}</td>
+                    <td>
+                        {% if record.actual_cost is not None %}
+                        ₹{{ record.actual_cost }}
+                        {% else %}
+                        <span class="text-muted italic">Pending</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ record.start_date|date:"Y-m-d" }}</td>
+                    <td>
+                        {% if record.end_date %}
+                        {{ record.end_date|date:"Y-m-d" }}
+                        {% else %}
+                        <span class="text-muted italic">-</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if record.status == 'SCHEDULED' %}
+                        <span class="badge bg-secondary-subtle text-secondary px-2.5 py-1.5"><i class="bi bi-clock me-1"></i>Scheduled</span>
+                        {% elif record.status == 'IN_PROGRESS' %}
+                        <span class="badge bg-warning-subtle text-warning px-2.5 py-1.5"><i class="bi bi-gear-wide-connected spinner-gear me-1"></i>In Progress</span>
+                        {% elif record.status == 'COMPLETED' %}
+                        <span class="badge bg-success-subtle text-success px-2.5 py-1.5"><i class="bi bi-check-circle-fill me-1"></i>Completed</span>
+                        {% else %}
+                        <span class="badge bg-danger-subtle text-danger px-2.5 py-1.5"><i class="bi bi-x-circle-fill me-1"></i>Cancelled</span>
+                        {% endif %}
+                    </td>
+                    <td class="pe-4 text-end">
+                        <div class="d-inline-flex gap-2">
+                            <a href="{% url 'maintenance:update' record.pk %}" class="btn btn-sm btn-outline-primary px-2" title="Edit"><i class="bi bi-pencil-fill"></i></a>
+                            <a href="{% url 'maintenance:delete' record.pk %}" class="btn btn-sm btn-outline-danger px-2" title="Delete"><i class="bi bi-trash-fill"></i></a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="9" class="text-center py-5 text-secondary">
+                        <i class="bi bi-tools display-4 d-block mb-3 opacity-25"></i>
+                        No maintenance records found matching the criteria.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Pagination Controls -->
+{% if is_paginated %}
+<nav aria-label="Page navigation" class="d-flex justify-content-center">
+    <ul class="pagination shadow-sm">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-item page-link text-dark" href="?page=1{% if q %}&q={{ q }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}{% if selected_type %}&maintenance_type={{ selected_type }}{% endif %}" aria-label="First">
+                <span aria-hidden="true">&laquo;&laquo;</span>
+            </a>
+        </li>
+        <li class="page-item">
+            <a class="page-item page-link text-dark" href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}{% if selected_type %}&maintenance_type={{ selected_type }}{% endif %}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li class="page-item active"><span class="page-link border-0 text-white" style="background: var(--primary-gradient);">{{ num }}</span></li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <li class="page-item"><a class="page-link text-dark" href="?page={{ num }}{% if q %}&q={{ q }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}{% if selected_type %}&maintenance_type={{ selected_type }}{% endif %}">{{ num }}</a></li>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-item page-link text-dark" href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}{% if selected_type %}&maintenance_type={{ selected_type }}{% endif %}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+        <li class="page-item">
+            <a class="page-item page-link text-dark" href="?page={{ page_obj.paginator.num_pages }}{% if q %}&q={{ q }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}{% if selected_type %}&maintenance_type={{ selected_type }}{% endif %}" aria-label="Last">
+                <span aria-hidden="true">&raquo;&raquo;</span>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}
