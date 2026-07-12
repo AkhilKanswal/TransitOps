@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ maintenance.issue }} - Maintenance - TransitOps{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <a href="{% url 'maintenance:list' %}" class="text-decoration-none text-secondary small d-inline-flex align-items-center gap-1 mb-2">
+            <i class="bi bi-arrow-left"></i> Back to Maintenance
+        </a>
+        <h1 class="page-title">{{ maintenance.issue }}</h1>
+        <p class="page-subtitle">{{ maintenance.vehicle.registration_number }} &bull; {{ maintenance.vehicle.model_name }}</p>
+    </div>
+    <div class="d-inline-flex gap-2">
+        {% if maintenance.is_active %}
+        <form method="post" action="{% url 'maintenance:complete' maintenance.pk %}" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success d-flex align-items-center gap-2 fw-semibold border-0">
+                <i class="bi bi-check-circle-fill"></i>
+                <span>Mark Completed</span>
+            </button>
+        </form>
+        {% endif %}
+        <a href="{% url 'maintenance:update' maintenance.pk %}" class="btn btn-outline-primary d-flex align-items-center gap-2 fw-semibold">
+            <i class="bi bi-pencil-fill"></i>
+            <span>Edit</span>
+        </a>
+        <a href="{% url 'maintenance:delete' maintenance.pk %}" class="btn btn-outline-danger d-flex align-items-center gap-2 fw-semibold">
+            <i class="bi bi-trash-fill"></i>
+            <span>Delete</span>
+        </a>
+    </div>
+</div>
+
+{% if messages %}
+<div class="row">
+    <div class="col-12">
+        {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<div class="row g-4">
+    <div class="col-12 col-lg-8">
+        <div class="custom-card border-0 mb-4">
+            <h3 class="fw-bold mb-4" style="font-family: 'Outfit', sans-serif;">Work Details</h3>
+
+            <div class="row g-4">
+                <div class="col-12 col-sm-6">
+                    <div class="p-3 bg-light rounded-3 d-flex align-items-start gap-3 h-100">
+                        <div class="p-2.5 rounded-3 bg-primary text-white" style="font-size: 1.5rem; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="bi bi-truck"></i>
+                        </div>
+                        <div>
+                            <div class="text-secondary small fw-medium">Vehicle</div>
+                            <a href="{% url 'vehicles:detail' maintenance.vehicle.pk %}" class="fw-bold text-decoration-none text-primary d-block">{{ maintenance.vehicle.registration_number }}</a>
+                            <span class="text-muted small">{{ maintenance.vehicle.model_name }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6">
+                    <div class="p-3 bg-light rounded-3 d-flex align-items-start gap-3 h-100">
+                        <div class="p-2.5 rounded-3 bg-info text-white" style="font-size: 1.5rem; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="bi bi-cash-coin"></i>
+                        </div>
+                        <div>
+                            <div class="text-secondary small fw-medium">Maintenance Cost</div>
+                            <div class="fw-bold fs-5">₹{{ maintenance.maintenance_cost }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6">
+                    <div class="p-3 bg-light rounded-3 d-flex align-items-start gap-3 h-100">
+                        <div class="p-2.5 rounded-3 bg-success text-white" style="font-size: 1.5rem; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="bi bi-calendar-event"></i>
+                        </div>
+                        <div>
+                            <div class="text-secondary small fw-medium">Start Date</div>
+                            <div class="fw-bold fs-6">{{ maintenance.start_date|date:"M d, Y" }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6">
+                    <div class="p-3 bg-light rounded-3 d-flex align-items-start gap-3 h-100">
+                        <div class="p-2.5 rounded-3 bg-secondary text-white" style="font-size: 1.5rem; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="bi bi-calendar-check"></i>
+                        </div>
+                        <div>
+                            <div class="text-secondary small fw-medium">End Date</div>
+                            <div class="fw-bold fs-6">
+                                {% if maintenance.end_date %}
+                                {{ maintenance.end_date|date:"M d, Y" }}
+                                {% else %}
+                                <span class="text-muted">Not completed yet</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-top">
+                <h5 class="fw-semibold mb-2">Description</h5>
+                <p class="text-secondary mb-0" style="white-space: pre-line;">{{ maintenance.description }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-4">
+        <div class="custom-card border-0 mb-4 h-100">
+            <h3 class="fw-bold mb-4" style="font-family: 'Outfit', sans-serif;">Service Status</h3>
+
+            <div class="text-center p-4 rounded-3 bg-light mb-4">
+                {% if maintenance.is_active %}
+                <span class="d-inline-flex p-3 rounded-circle bg-warning text-white mb-3" style="font-size: 2rem;">
+                    <i class="bi bi-wrench-adjustable"></i>
+                </span>
+                <h4 class="fw-bold text-warning">Ongoing</h4>
+                <p class="text-secondary small mb-0">Vehicle is currently in the workshop for this service.</p>
+                {% else %}
+                <span class="d-inline-flex p-3 rounded-circle bg-success text-white mb-3" style="font-size: 2rem;">
+                    <i class="bi bi-check-circle"></i>
+                </span>
+                <h4 class="fw-bold text-success">Completed</h4>
+                <p class="text-secondary small mb-0">This maintenance work has been finished.</p>
+                {% endif %}
+            </div>
+
+            <div class="border-top pt-3 text-secondary small">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Logged On:</span>
+                    <span class="fw-semibold text-dark">{{ maintenance.created_at|date:"Y-m-d H:i" }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>Vehicle Status:</span>
+                    <span class="fw-semibold text-dark">{{ maintenance.vehicle.get_status_display }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

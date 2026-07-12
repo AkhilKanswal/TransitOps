@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Maintenance - TransitOps{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <a href="{% url 'maintenance:detail' maintenance.pk %}" class="text-decoration-none text-secondary small d-inline-flex align-items-center gap-1 mb-2">
+        <i class="bi bi-arrow-left"></i> Cancel and Go Back
+    </a>
+    <h1 class="page-title">Delete Maintenance Record</h1>
+    <p class="page-subtitle">Permanently remove this service record from TransitOps.</p>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+        <div class="custom-card border-0 text-center p-4">
+            <div class="d-inline-flex align-items-center justify-content-center mb-4 text-danger bg-danger-subtle rounded-circle" style="width: 80px; height: 80px; font-size: 2.5rem;">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+            </div>
+
+            <h3 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif;">Are you absolutely sure?</h3>
+            <p class="text-secondary mb-4">
+                You are about to delete the <strong class="text-dark">{{ maintenance.issue }}</strong> record for vehicle <strong class="text-dark">{{ maintenance.vehicle.registration_number }}</strong>. This action is permanent and cannot be undone.
+                {% if maintenance.is_active %}
+                The vehicle will be restored to Available status.
+                {% endif %}
+            </p>
+
+            <form method="post" class="d-flex justify-content-center gap-3">
+                {% csrf_token %}
+                <a href="{% url 'maintenance:detail' maintenance.pk %}" class="btn btn-outline-secondary px-4 py-2 fw-semibold">Cancel</a>
+                <button type="submit" class="btn btn-danger px-4 py-2 fw-semibold">Confirm Delete</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
