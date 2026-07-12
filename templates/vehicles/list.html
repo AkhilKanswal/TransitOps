@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block extra_css %}
+
+{% endblock extra_css %}
+
+
+<div class="page-container">
+
+    <div class="page-header">
+        <h1>Vehicles</h1>
+    
+        <a href="{% url 'vehicles:add' %}" class="add-btn">
+            + Add Vehicle
+        </a> 
+    </div>
+
+    <div class="search-box">
+        <input type="text" placeholder="Search Vehicles...">
+    </div>
+
+    <div class="table-container">
+
+        <table class="Vehicles-table">
+
+            <thead>
+                <tr>
+                    <th>Registration Number</th>
+                    <th>Chasis Number</th>
+                    <th>Year of Registration</th>
+                    <th>Year of Registration Expire</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                    <th>Emssion Type</th>
+                    <th>Body Type</th>
+                    <th>Capicity</th>
+                </tr>
+            </thead>
+            
+            <tbody>
+                
+                {% for vehicle in vehicles %}
+                <tr>
+                    <th>{{vehicle.RegistrationNumber}}</th>
+                    <th>{{vehicle.vehicleChasisNumber}}</th>
+                    <th>{{vehicle.YearOfRegistration}}</th>
+                    <th>{{vehicle.YearOfRegistrationExpire}}</th>
+                    <th>{{vehicle.Status}}</th>
+                    <th>{{vehicle.isActions}}</th>
+                    <th>{{vehicle.EmssionType}}</th>
+                    <th>{{vehicle.BodyType}}</th>
+                    <th>{{vehicle.Capicity}}</th>
+
+
+                    <td>
+                        <span class="availivility active">
+                            {{isActive}}
+                        </span>
+                    </td>
+
+                    <td class="actions">
+                        <a href="#">View</a>
+                        <a href="#">Edit</a>
+                    </td>
+
+                </tr>
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
