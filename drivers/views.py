@@ -102,3 +102,13 @@ class DriverDeleteView(LoginRequiredMixin, DeleteView):
         driver = self.get_object()
         messages.success(self.request, f"Driver {driver.full_name} was deleted successfully.")
         return super().delete(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        from django.db.models.deletion import ProtectedError
+        from django.shortcuts import redirect
+        try:
+            return super().post(request, *args, **kwargs)
+        except ProtectedError:
+            driver = self.get_object()
+            messages.error(request, f"Deletion failed: Driver {driver.full_name} is referenced by active trips and cannot be deleted.")
+            return redirect('drivers:detail', pk=driver.pk)

@@ -102,3 +102,13 @@ class VehicleDeleteView(LoginRequiredMixin, DeleteView):
         vehicle = self.get_object()
         messages.success(self.request, f"Vehicle {vehicle.registration_number} was deleted successfully.")
         return super().delete(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        from django.db.models.deletion import ProtectedError
+        from django.shortcuts import redirect
+        try:
+            return super().post(request, *args, **kwargs)
+        except ProtectedError:
+            vehicle = self.get_object()
+            messages.error(request, f"Deletion failed: Vehicle {vehicle.registration_number} is referenced by existing trips or maintenance records and cannot be deleted.")
+            return redirect('vehicles:detail', pk=vehicle.pk)
