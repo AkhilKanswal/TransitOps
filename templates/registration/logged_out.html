@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Logged Out - TransitOps{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 60vh;">
+    <div class="col-12 col-md-8 col-lg-6 text-center">
+        <div class="custom-card border-0 shadow-sm p-5 bg-white rounded-3">
+            <div class="d-inline-flex align-items-center justify-content-center mb-4 rounded-circle text-white" style="width: 80px; height: 80px; background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); font-size: 2.5rem; box-shadow: 0 4px 12px rgba(107, 114, 128, 0.25);">
+                <i class="bi bi-box-arrow-left"></i>
+            </div>
+            <h2 class="fw-bold mb-2" style="font-family: 'Outfit', sans-serif;">Signed Out Successfully</h2>
+            <p class="text-secondary mb-4">You have been logged out of the TransitOps Fleet Portal. You must sign back in to manage fleet operations.</p>
+            <a href="{% url 'login' %}" class="btn btn-primary fw-semibold px-4 py-2 border-0" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);">
+                Sign In Again
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
