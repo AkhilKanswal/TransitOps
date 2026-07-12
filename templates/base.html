@@ -315,7 +315,7 @@
                 <span>Maintenance</span>
             </a>
 
-            <a href="{% url 'expenses:list' %}" class="sidebar-link {% if request.resolver_match.app_name == 'expenses' %}active{% endif %}">
+            <a href="{% url 'expenses:home' %}" class="sidebar-link {% if request.resolver_match.app_name == 'expenses' %}active{% endif %}">
                 <i class="bi bi-cash-stack"></i>
                 <span>Expenses</span>
             </a>
